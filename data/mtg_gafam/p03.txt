@@ -1,22 +1,22 @@
-# Pommier 3 projet GAFAM Restinclieres																															
-																															
-CODE : FORM-A																															
-																															
-CLASSES :																															
-SYMBOL	SCALE	DECOMPOSITION	INDEXATION	DEFINITION																											
-$	0	FREE	FREE	IMPLICIT																											
-P	1	FREE	FREE	EXPLICIT	#Pommier																										
-A	2	FREE	FREE	EXPLICIT	#Axe principal																										
-B	2	FREE	FREE	EXPLICIT	#Ramification_ordre2																										
-C	2	FREE	FREE	EXPLICIT	#Ramification_ordre3																										
-D	2	FREE	FREE	EXPLICIT	#Ramification_ordre4																										
-S	3	FREE	FREE	EXPLICIT	#Nœud																										
-																															
-DESCRIPTION :																															
-LEFT	RIGHT	RELTYPE	MAX																												
-S	S, B, C, D	<	?																												
-S	B, C, D	+	?																												
-B, C, D	S	<	?																												
+# Pommier 1 projet GAFAM Restinclieres																																	
+																																	
+CODE : FORM-A																																	
+																																	
+CLASSES :																																	
+SYMBOL	SCALE	DECOMPOSITION	INDEXATION	DEFINITION																													
+$	0	FREE	FREE	IMPLICIT																													
+P	1	FREE	FREE	EXPLICIT	#Pommier																												
+A	2	FREE	FREE	EXPLICIT	#Axe principal																												
+B	2	FREE	FREE	EXPLICIT	#Ramification_ordre2																												
+C	2	FREE	FREE	EXPLICIT	#Ramification_ordre3																												
+D	2	FREE	FREE	EXPLICIT	#Ramification_ordre4																												
+S	3	FREE	FREE	EXPLICIT	#Noeud																												
+																																	
+DESCRIPTION :																																	
+LEFT	RIGHT	RELTYPE	MAX																														
+S	S, B, C, D	<	?																														
+S	B, C, D	+	?																														
+B 	C, D, S	<	?																														
 																															
 FEATURES :																															
 NAME	TYPE																														

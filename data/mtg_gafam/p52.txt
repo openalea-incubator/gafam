@@ -10,13 +10,13 @@ A	2	FREE	FREE	EXPLICIT	#Axe principal
 B	2	FREE	FREE	EXPLICIT	#Ramification_ordre2																										
 C	2	FREE	FREE	EXPLICIT	#Ramification_ordre3																										
 D	2	FREE	FREE	EXPLICIT	#Ramification_ordre4																										
-S	3	FREE	FREE	EXPLICIT	#Nœud																										
-																															
-DESCRIPTION :																															
-LEFT	RIGHT	RELTYPE	MAX																												
-S	S, B, C, D	<	?																												
-S	B, C, D	+	?																												
-B, C, D	S	<	?																												
+S	3	FREE	FREE	EXPLICIT	#Noeud																												
+																																	
+DESCRIPTION :																																	
+LEFT	RIGHT	RELTYPE	MAX																														
+S	S, B, C, D	<	?																														
+S	B, C, D	+	?																														
+B 	C, D, S	<	?																														
 																															
 FEATURES :																															
 NAME	TYPE																														
@@ -1168,10 +1168,10 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^/S395																														
 		+C121									2017					6			VG												
 		^/S396																	BL												
-		¨<S396.1																	BL												
-		¨<S396.2																	BL												
-		¨<S396.3																	BL												
-		¨<S396.4																													
+		ï¿½<S396.1																	BL												
+		ï¿½<S396.2																	BL												
+		ï¿½<S396.3																	BL												
+		ï¿½<S396.4																													
 		^<C122									2018					10.8			VG						160.0268	160.0268					
 		^/S397.2																	BL												
 		^<S397.3																	BL												
