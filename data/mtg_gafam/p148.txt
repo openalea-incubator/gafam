@@ -10,18 +10,19 @@ A	2	FREE	FREE	EXPLICIT	#Axe principal
 B	2	FREE	FREE	EXPLICIT	#Ramification_ordre2																										
 C	2	FREE	FREE	EXPLICIT	#Ramification_ordre3																										
 D	2	FREE	FREE	EXPLICIT	#Ramification_ordre4																										
-S	3	FREE	FREE	EXPLICIT	#Noeud																												
-																																	
-DESCRIPTION :																																	
-LEFT	RIGHT	RELTYPE	MAX																														
-S	S, B, C, D	<	?																														
-S	B, C, D	+	?																														
-B 	C, D, S	<	?																														
+S	3	FREE	FREE	EXPLICIT	#Noeud																										
+																															
+DESCRIPTION :																															
+LEFT	RIGHT	RELTYPE	MAX																												
+S	S, B, C, D	<	?																												
+S	B, C, D	+	?																												
+B 	C, D, S	<	?																												
+B 	C, D, S	+	?																												
 																															
 FEATURES :																															
 NAME	TYPE																														
-date	STRING																														
-realisation	INT																														
+treedate	DD/MM/YYYY     # date																														
+Date	DD/MM/YYYY																														
 length_graftpoint_ram	REAL																														
 diameter	REAL																														
 diameter_b	REAL																														
@@ -45,7 +46,7 @@ diameter_a2018	REAL
 																															
 MTG :																															
 																															
-ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	diameter_a	length	azimuth	angle	type	length_bourse	nb_leaves	nb_flowers	nb_fruits	fruit_drops	leaf_area_2018	leaf_area_2018b	leaf_area_2019	leaf_area_2019b	diameter_2018	diameter_b2018	diameter_a2018
+ENTITY-CODE										treedate	Date	length_graftpoint_ram	diameter	diameter_b	diameter_a	length	azimuth	angle	type	length_bourse	nb_leaves	nb_flowers	nb_fruits	fruit_drops	leaf_area_2018	leaf_area_2018b	leaf_area_2019	leaf_area_2019b	diameter_2018	diameter_b2018	diameter_a2018
 /P148										09/2019															18788.91857	20168.07662	25595.00636	28609.97943			
 ^/A1											2016	48.3		3	2	53.1														2.2	2.1
 ^/S1																															
@@ -176,16 +177,16 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S23																		BL 												
 	^<S24																														
 		+S25									2018					0.7			VG						87.9027	87.9027					
-		^/S25.1									2019								BL												
+		*									2019								BL												
 	^<S26																														
 		+S27									2018					1			VG						90.045	90.045					
-		^/S27.1									2019								BL												
+		*									2019								BL												
 	^<S28																														
 		+S29									2018					0.8			VG						88.6168	88.6168					
-		^/S29.1									2019								BL												
+		*									2019								BL												
 	^<S30																														
 		+S31									2018					1.4			VG						92.9014	92.9014					
-		^/S31.1									2019								BL												
+		*									2019								BL												
 	^<S32																		BL												
 	^<S33																		BL												
 	^<S34																		BL												
@@ -217,17 +218,17 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S43																		EX												
 	^<S44																														
 		+S45									2018					6.6			FL		7	5	0		62.76094	111.1894266					
-		^/S45.1									2019								BL												
+		*									2019								BL												
 	^<S46																														
 		+S47									2018					4.9			FL		8	5	0		49.98391	111.2981105					
-		^/S47.1									2019								NA												
+		*									2019								NA												
 	^<S48																														
 		+C4.1									2018					1.3			VG						92.1873	92.1873					
 		^<C4.2																													
 		^/S49									2019					1			VG								90.045	90.045			
 	^<S50																														
 		+S51									2018					1.4			VG						92.9014	92.9014					
-		^/S51.1									2019								NA												
+		*									2019								NA												
 	^<S52																		BL												
 	^<S53																		BL												
 	^<S54																		BL												
@@ -236,7 +237,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S57																		BL												
 	^<S58																														
 		+S59									2018					0.3			VG						85.0463	85.0463					
-		^/S59.1									2019								BL												
+		*									2019								BL												
 	^<B13										2018				0.4	12.2			FL		7	5	0		104.84998	153.2784666					
 	^/S59.2																		BL												
 	^<S59.3																														
@@ -323,10 +324,10 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S78																		BL												
 	^<S79																														
 		+S80									2018					0.4			VG						85.7604	85.7604					
-		^/S80.1									2019								BL												
+		*									2019								BL												
 	^<S81																														
 		+S82									2018					0.8			VG						88.6168	88.6168					
-		^/S82.1									2019								BL												
+		*									2019								BL												
 	^<S83																														
 		+C9									2018					3.7			VG						109.3257	109.3257					
 		^/S83.1																	BL												
@@ -338,13 +339,13 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 			+S84.1								2019					6.2			FL								59.75458	59.75458			
 	^<S85																														
 		+S86									2018					1.3			VG						92.1873	92.1873					
-		^/S86.1									2019								BL												
+		*									2019								BL												
 	^<S87																														
 		+S88									2018					1.1			VG						90.7591	90.7591					
-		^/S88.1									2019								BL												
+		*									2019								BL												
 	^<S89																														
 		+S90									2018					0.5			VG						86.4745	86.4745					
-		^/S90.1									2019								BL												
+		*									2019								BL												
 	^<S91																		BL												
 	^<S92																		BL												
 	^<S93																		BL												
@@ -352,7 +353,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S95																		BL												
 	^<S96																														
 		+S97									2018					1.1			VG						90.7591	90.7591					
-		^/S97.1																	BL												
+		*																	BL												
 	^<S98																														
 		+C11									2018					4.4			VG						114.3244	114.3244					
 		^/S98.1																	BL												
@@ -397,7 +398,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 		^/S106									2019					14.5			FL	1	6	7	1	1			122.13655	159.0189616			
 	^<S107																														
 		+S108									2018					2.1			VG						97.9001	97.9001					
-		^/S108.1									2019								BL												
+		*									2019								BL												
 	^<B17										2018				0.75	27.1			VG						276.4251	276.4251					
 	^/S109																		BL												
 	^<S109.1																		BL												
@@ -435,7 +436,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S122																		BL												
 	^<S123																														
 		+S124									2018					0.9			VG						89.3309	89.3309					
-		^/S124.1									2019								BL												
+		*									2019								BL												
 	^<S125																														
 		+C108.7									2018					1.6			VG						94.3296	94.3296					
 		^<C108.8																													
@@ -443,10 +444,10 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 			+S126.2								2019					2			FL								28.1878	28.1878			
 	^<S127																														
 		+S128									2018					1.1			VG						90.7591	90.7591					
-		^/S128.1									2019								BL												
+		*									2019								BL												
 	^<S129																														
 		+S130									2018					0.8			VG						88.6168	88.6168					
-		^/S130.1									2019								BL												
+		*									2019								BL												
 	^<S131																		BL												
 	^<S132																		BL												
 	^<S133																		BL												
@@ -455,13 +456,13 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S136																		BL												
 	^<S137																														
 		+S138									2018					0.7			VG						87.9027	87.9027					
-		^/S138.1									2019								BL												
+		*									2019								BL												
 	^<S139																														
 		+S140									2018					0.7			VG						87.9027	87.9027					
-		^/S140.1									2019								BL												
+		*									2019								BL												
 	^<S141																														
 		+S142									2018					1			VG						90.045	90.045					
-		^/S142.1									2019								BL												
+		*									2019								BL												
 	^<S143																														
 		+C19									2018					3			VG						104.327	104.327					
 		^/S143.1																	BL												
@@ -482,7 +483,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 		+C23									2018					6			FL						58.2514	58.2514					
 		^/S147.1																													
 			+D1								2018					0.6			FL						17.66554	17.66554					
-			^/D2																												
+			^<D2																												
 			^/S147.2								2019					1.9			VG								96.4719	96.4719			
 		^<S147.3																	BL												
 		^<S147.4																	BL												
@@ -490,7 +491,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 		^/S148									2019					2			FL	1							28.1878	89.50200052			
 	^<S150																														
 		+S151									2018					1.8			FL		8	5	0		26.68462	87.99882052					
-		^/S151.1									2019								NA												
+		*									2019								NA												
 	^<S152																														
 		+C25									2018					2.7			FL		7	5	0		33.44893	81.87741665					
 		^/S152.1																	BL												
@@ -508,7 +509,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S158																		BL												
 	^<S159																														
 		+S160									2018					0.7			VG						87.9027	87.9027					
-		^/S160.1									2019								BL												
+		*									2019								BL												
 	^<S161																														
 		+C29									2018					5.7			VG						123.6077	123.6077					
 		^/S161.1																	BL												
@@ -555,7 +556,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 		^/S170									2019					35.3			FL	2	9	7	1	1			278.46727	353.9656002			
 	^<S171																														
 		+S172									2018					0.6			VG						87.1886	87.1886					
-		^/S172.1									2019								BL												
+		*									2019								BL												
 	^<B19										2018					0.55	40		FL		11	1	0		17.289745	124.9150207					
 	^/S173																		BL												
 	^<S173.1																		BL												
@@ -592,16 +593,16 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^/S175																		BL												
 	^<S176																														
 		+S177									2018					1.4			VG						92.9014	92.9014					
-		^/S177.1									2019								BL												
+		*									2019								BL												
 	^<S178																														
 		+S179									2018					0.9			VG						89.3309	89.3309					
-		^/S179.1									2019								BL												
+		*									2019								BL												
 	^<S180																														
 		+S181									2018					2.2			VG						98.6142	98.6142					
-		^/S181.1									2019								BL												
+		*									2019								BL												
 	^<S182																														
 		+S183									2018					0.5			VG						86.4745	86.4745					
-		^/S183.1									2019								BL												
+		*									2019								BL												
 	^<S184																		BL												
 	^<S185																														
 		+C39									2018					72.4			VG						599.9124	599.9124					
@@ -651,13 +652,13 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 		^/S186									2019					50.6			VG								444.2386	444.2386			
 	^<S187																														
 		+S188									2018					0.6			VG						87.1886	87.1886					
-		^/S188.1									2019								BL												
+		*									2019								BL												
 	^<S189																														
 		+S190									2018					0.7			VG						87.9027	87.9027					
-		^/S190.1									2019								BL												
+		*									2019								BL												
 	^<S191																														
 		+S192									2018					1.4			VG						92.9014	92.9014					
-		^/S192.1									2019								BL												
+		*									2019								BL												
 	^<S193																														
 		+C41									2018					5.1			VG						119.3231	119.3231					
 		^/S193.1																	BL												
@@ -719,7 +720,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S207																		BL												
 	^<S208																														
 		+S209									2018					1.2			VG						91.4732	91.4732					
-		^/S209.1									2019								BL												
+		*									2019								BL												
 	^<S210																		BL												
 	^<S211																														
 		+C51									2018					7.4			FL		7	6	0		68.77366	117.2021466					
@@ -742,7 +743,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 		^/S214									2019								BL												
 	^<S215																														
 		+S216									2018					0.5			FL		4	3	0		16.91395	34.93172974					
-		^/S216.1									2019								BL												
+		*									2019								BL												
 	^<S217																														
 		+C55									2018					5.6			FL		7	6	0		55.24504	103.6735266					
 		^/S217.1																	BL												
@@ -750,7 +751,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 		^/S218									2019					2			FL	1							28.1878	89.50200052			
 	^<S219																														
 		+S220									2018					1.7			FL		7	6	0		25.93303	74.36151665					
-		^/S219.1									2019								BL												
+		*									2019								BL												
 	^<S221																														
 		+C57									2018					4.5			VG						115.0385	115.0385					
 		^/S221.1																	BL												
@@ -826,11 +827,11 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^/S232																		BL												
 	^<S233																														
 		+S234									2018					2			VG						97.186	97.186					
-		^/S234.1									2019								BL												
+		*									2019								BL												
 	^<S235																		BL												
 	^<S236																														
 		+S237									2018					0.8			VG						88.6168	88.6168					
-		^/S237.1									2019								BL												
+		*									2019								BL												
 	^<S238																		BL												
 	^<S239																		BL												
 	^<S240																														
@@ -840,7 +841,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S242																		BL												
 	^<S243																														
 		+S244									2018					1			VG						90.045	90.045					
-		^/S244.1									2019								BL												
+		*									2019								BL												
 	^<S245																														
 		+C65									2018					22.5			VG						243.5765	243.5765					
 		^/S245.1																	BL												
@@ -912,20 +913,20 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 		^/S254									2019								BL												
 	^<S255																														
 		+S256									2018					2.4			FL		6	5	0		31.19416	68.07657158					
-		^/S256.1									2019								BL												
+		*									2019								BL												
 	^<S257																														
 		+S258									2018					3.5			FL		6	3	0		39.46165	76.34406158					
-		^/S258.1									2019								BL												
+		*									2019								BL												
 	^<S259																		EX												
 	^<S260																														
 		+S261									2018					0.7			FL						18.41713	18.41713					
-		^/S261.1									2019								BL												
+		*									2019								BL												
 	^<S262																														
 		+S263									2018					1			FL						20.6719	20.6719					
-		^/S263.1									2019								BL												
+		*									2019								BL												
 	^<S264																														
 		+S265									2018					0.6			FL						17.66554	17.66554					
-		^/S265.1									2019								BL												
+		*									2019								BL												
 	^<S266																														
 		+C74.1									2018					1.5			FL		6	5	0		24.42985	61.31226158					
 		^<C74.2																													
@@ -940,7 +941,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 		^/S271									2019					34.6			VG								329.9826	329.9826			
 	^<S272																														
 		+S273									2018					2.6			FL		7	6	0		32.69734	81.12582665					
-		^/S273.1									2019								BL												
+		*									2019								BL												
 	^<S274																														
 		+C74.7									2018					0.9			FL		6	3	0		19.92031	56.80272158					
 		^<C74.8																													
@@ -951,7 +952,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S279																		BL												
 	^<S280																														
 		+S281									2018					1			VG						90.045	90.045					
-		^/S281.1									2019								BL												
+		*									2019								BL												
 	^<S282																														
 		+C75									2018					8			VG						140.032	140.032					
 		^/S282.1																	BL												
@@ -1012,31 +1013,31 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 	^<S297																		BL												
 	^<S298																														
 		+S299									2018					0.8			VG						88.6168	88.6168					
-		^/S299.1									2019								BL												
+		*									2019								BL												
 	^<S300																														
 		+S301									2018					0.9			VG						89.3309	89.3309					
-		^/S301.1									2019								BL												
+		*									2019								BL												
 	^<S302																														
 		+S303									2018					0.8			VG						88.6168	88.6168					
-		^/S303.1									2019								BL												
+		*									2019								BL												
 	^<S304																														
 		+S305									2018					1			VG						90.045	90.045					
-		^/S305.1									2019								BL												
+		*									2019								BL												
 	^<S306																														
 		+S307									2018					1.7			VG						95.0437	95.0437					
-		^/S307.1									2019								BL												
+		*									2019								BL												
 	^<S308																														
 		+S309									2018					1.1			VG						90.7591	90.7591					
-		^/S309.1									2019								BL												
+		*									2019								BL												
 	^<S310																														
 		+S311									2018					0.6			VG						87.1886	87.1886					
-		^/S311.1									2019								BL												
+		*									2019								BL												
 	^<S312																														
 		+S313									2018					0.8			VG						88.6168	88.6168					
-		^/S313.1									2019								BL												
+		*									2019								BL												
 	^<S314																														
 		+S315									2018					1.9			FL						27.43621	27.43621					
-		^/S315.1									2019								BL												
+		*									2019								BL												
 	^<S316																														
 		+C79									2018					2.4			FL		7	5	0		31.19416	79.62264665					
 		^/S317																													
@@ -1047,16 +1048,16 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 		^/S318									2019					1.2			VG								91.4732	91.4732			
 	^<S319																														
 		+S320									2018					1.7			VG						95.0437	95.0437					
-		^/S320.1									2019								BL												
+		*									2019								BL												
 	^<S321																		BL												
 	^<S322																		BL												
 	^<S323																		BL												
 	^<S324																														
 		+S325									2018					0.8			VG						88.6168	88.6168					
-		^/S325.1									2019								BL												
+		*									2019								BL												
 	^<S326																														
 		+S327									2018					1.4			VG						92.9014	92.9014					
-		^/S327.1									2019								BL												
+		*									2019								BL												
 	^<S328																														
 		+C81									2018					3.1			VG						105.0411	105.0411					
 		^/S329.1																	BL												
@@ -1100,7 +1101,7 @@ ENTITY-CODE										date	realisation	length_graftpoint_ram	diameter	diameter_b	
 			+S337.1								2019					13			FL	1							110.8627	110.8627			
 	^<S338																														
 		+S339									2018					0.7			VG						87.9027	87.9027					
-		^/S339.1									2019								BL												
+		*									2019								BL												
 	^<B26										2018				0.6	46.4			VG						414.2464	414.2464					
 	^/S340																		BL												
 	^<S340.1																		BL												
