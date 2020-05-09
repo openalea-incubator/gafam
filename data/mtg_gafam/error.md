@@ -1,9 +1,63 @@
 # Erreurs
 
+## 
+- p1: S179
+- p3: S47.27, S56.42, S61.16, S347.1
+- p12: 'S170.1','S284.1','S371.17'
+- p28: S544.9
+- p30: S544.9
+- p32: S388
+- p34: S235.1
+- p42: S1.3
+- p44: S77 (ln 328 il y en a deux)
+- p60: S365; S368
+- p68: S195
+- p97: S250 (ln 2243)
+- p98: S79, S210.3
+- p126: S179
+- p140: S208, S212
+
+
+
+
+ Path(u'data/mtg_gafam/p140.txt'): ['S208', 'S212'],
+
+
+[Path(u'data/mtg_gafam/p1.txt'),
+ Path(u'data/mtg_gafam/p3.txt'),
+ Path(u'data/mtg_gafam/p12.txt'),
+ Path(u'data/mtg_gafam/p28.txt'),
+ Path(u'data/mtg_gafam/p30.txt'),
+ Path(u'data/mtg_gafam/p32.txt'),
+ Path(u'data/mtg_gafam/p34.txt'),
+ Path(u'data/mtg_gafam/p42.txt'),
+ Path(u'data/mtg_gafam/p44.txt'),
+ Path(u'data/mtg_gafam/p60.txt'),
+ Path(u'data/mtg_gafam/p68.txt'),
+ Path(u'data/mtg_gafam/p97.txt'),
+ Path(u'data/mtg_gafam/p98.txt'),
+ Path(u'data/mtg_gafam/p126.txt'),
+ Path(u'data/mtg_gafam/p140.txt')]
+
+
+
+### p32, p110, p141
+ln 1252: ^<S350 -> ^/S350 (p32)
+ln 1247: ^<S396 -> ^/S396 (p110)
+ln 1321:  ^<S333 -> ^/S333 (p141)
+### p34, p97
+A3: line 1275 (autour) p(34)
+diameter_b non définit
+
+p97: A3: ln 2865  (p97)
+diameter_b non définit
+
+
+###################
 ### p3.txt
 ^+S298.12
 
-p9.txt: ln 395 (v346)
+p9.txt: ln 396 (v346)
 p97= <665.1(type=BL,_line=2667)'
 p140: Args  478)S103. of vertex  414 of type  _line is not of type 
 p141: Args  1376)B70. of vertex  1280 of type  _line is not of type
