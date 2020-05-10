@@ -328,7 +328,7 @@ class Tree(A):
         Tapper = (A1.diameter_b - A3.diameter_b) / total_length
 
         # number of node on the trunk
-        nb_trunk_S = len(g.Trunk (2, scale=3))
+        nb_Trunk_S = len(g.Trunk (2, Scale=3))
 
         df = pd.DataFrame( OrderedDict(
             apple_tree=[apple_tree],
@@ -354,6 +354,7 @@ class Tree(A):
             LA_2019=[LA_2019],
             Elongation=[Elongation],
             Tapper=[Tapper],
+            nb_Trunk_S=[nb_Trunk_S],
             ),
             columns='apple_tree trt NCI TSA_2018 TSA_2019 L_shoot_V_2018 L_shoot_V_2019 '
             'L_shoot_F_2018 L_shoot_F_2019 S_shoot_V_2018 S_shoot_V_2019 S_shoot_F_2018 S_shoot_F_2019 '
@@ -500,7 +501,7 @@ def forest(fns=None):
             continue
 
     all_df = pd.concat(dfs, axis=0, ignore_index=True)
-    #all_df.to_csv('trees.csv', sep=';', index=False)
+    all_df.to_csv('trees.csv', sep=';', index=False)
 
 
     return all_df, errors
