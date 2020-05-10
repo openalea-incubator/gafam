@@ -26,19 +26,20 @@ def test1():
     print(d)
     return d
 
-fns = load_data()
-errors = []
-for fn in fns:
-    labels = set()
-    g=MTG(fn, has_date=True)
-    diameter = g.property('diameter')
-    diameter_b = g.property('diameter_b')
-    labels.update(set(g.class_name(g.parent(v)) for v in diameter_b))
-    labels.update(set(g.class_name(g.parent(v)) for v in diameter))
+def test2():
+    fns = load_data()
+    errors = []
+    for fn in fns:
+        labels = set()
+        g=MTG(fn, has_date=True)
+        diameter = g.property('diameter')
+        diameter_b = g.property('diameter_b')
+        labels.update(set(g.class_name(g.parent(v)) for v in diameter_b))
+        labels.update(set(g.class_name(g.parent(v)) for v in diameter))
 
-    if 'B' in labels:
-        errors.append(fn)
-print(errors)
-
+        if 'B' in labels:
+            errors.append(fn)
+    print(errors)
+    return labels
 
     

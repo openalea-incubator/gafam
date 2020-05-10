@@ -167,6 +167,8 @@ class A(object):
     def la19(self, v):
         return self.att('2019', 'leaf_area_2019', v, 0)
 
+    def date(self, v):
+        g=self.g
 
 class Tree(A):
 
@@ -293,6 +295,7 @@ class Tree(A):
         nb_F_2019 = sum(1 for v in vs19 if self.is_flo('2019', v))
 
         # Number of latent buds in 2018 and 2019
+        # Bug: latent bugs have not always a date
         nb_L_2018 = sum(1 for v in vs18 if self.is_latent('2018', v))
         nb_L_2019 = sum(1 for v in vs19 if self.is_latent('2019',v))
 
