@@ -22,7 +22,7 @@ def check_miss(g):
     # If scale is 1, then the main axe is not decomposed: impossible
     # if scale is 2, then 2 successives branches are not decomposed: error?
     # Finally, if scale is 3, this is the anchor where we want to add a ghost node
-    scale2 = list(a+1 for a in anchors if g.scale(a)==2) 
+    scale2 = list(a+1 for a in anchors if g.scale(a)==2)
     return scale2
 
 def check_roots(g, scale=2):
@@ -43,28 +43,28 @@ def debug():
 def tree(g):
     """
     Extract information at tree scale:
-        * apple_tree: 
+        * apple_tree:
             Apple tree number
-        * trt: 
+        * trt:
             treatment or NCI category
-        * NCI: 
+        * NCI:
             Neighbourhood crowding index value
-        * TSA_2018: 
-            Trunk section area: 
+        * TSA_2018:
+            Trunk section area:
             $\pi*diameter_b_2018^2/4$ (cm2)
-        * TSA_2019: 
+        * TSA_2019:
             Trunk section area: $\pi*diameter_b^2/4$ (cm2)
-        * L_shoot_V/F_2018/2019: 
+        * L_shoot_V/F_2018/2019:
             Number of vegetative of floral long shoots (>=5cm) in 2018 and 2019
-        * S_shoot_V/F_2018/2019: 
+        * S_shoot_V/F_2018/2019:
             Number of vegetative of floral short shoots (<5cm) in 2018 and 2019
-        * nb_V_2018/2019: 
+        * nb_V_2018/2019:
             Number of vegetative buds in 2018 and 2019
-        * nb_F_2018/2019: 
+        * nb_F_2018/2019:
             Number of floral buds in 2018 and 2019
-        * nb_L_2018/2019: 
+        * nb_L_2018/2019:
             Number of latent buds in 2018 and 2019
-        * LA_2018/2019: 
+        * LA_2018/2019:
             Leaf area (cm2) in 2018 and 2019
 
     """
@@ -79,7 +79,7 @@ def error_date(g):
     """
 
     date = g.property('realisation')
-    
+
     vids = []
     for v in g.roots_iter(3):
         if g.class_name(v) == g.class_name(v-1):
@@ -103,7 +103,7 @@ def error_date(g):
 def errors_to_csv(filename='errors.csv'):
     fns = load_data()
     dfs = []
-    for fn in fns: 
+    for fn in fns:
         try:
             g = MTG(fn, has_date=True)
             name = fn.name
@@ -113,11 +113,11 @@ def errors_to_csv(filename='errors.csv'):
         except:
             print('Error: {}'.format(fn))
             continue
-    
+
     df = pd.concat(dfs, ignore_index=True, axis=0)
     #df.to_csv(filename, sep=';', index=False)
     return df
-    
+
 
 class A(object):
     def __init__(self, g):
@@ -176,39 +176,46 @@ class Tree(A):
 
         Algorithms
         ----------
-            - apple_tree: 
+            - apple_tree:
                 Apple tree number
-            - trt: 
+            - trt:
                 treatment or NCI category
-            - NCI: 
+            - NCI:
                 Neighbourhood crowding index value
-            - TSA_2018: 
+            - TSA_2018:
                 Trunk section area: pi*diameter_b_2018**2/4 (cm2)
-            - TSA_2019: 
+            - TSA_2019:
                 Trunk section area: pi*diameter_b**2/4 (cm2)
-            - L_shoot_V/F_2018/2019: 
+            - L_shoot_V/F_2018/2019:
                 Number of vegetative of floral long shoots (>=5cm) in 2018 and 2019
-            - S_shoot_V/F_2018/2019: 
+            - S_shoot_V/F_2018/2019:
                 Number of vegetative of floral short shoots (<5cm) in 2018 and 2019
-            - nb_V_2018/2019: 
+            - nb_V_2018/2019:
                 Number of vegetative buds in 2018 and 2019
-            - nb_F_2018/2019: 
+            - nb_F_2018/2019:
                 Number of floral buds in 2018 and 2019
-            - nb_L_2018/2019: 
+            - nb_L_2018/2019:
                 Number of latent buds in 2018 and 2019
-            - LA_2018/2019: 
+            - LA_2018/2019:
                 Leaf area (cm2) in 2018 and 2019
-            - Elongation : 
+            - Elongation :
                 longueur du tronc (A1+A2+A3+dernier /S) / diametre base  (A1)
-            - Tapper : 
-                (diametre base (A1) - diametre sommet) / longueur total 
+            - Tapper :
+                (diametre base (A1) - diametre sommet) / longueur total
 
-        """        
+        """
         g = self.g
 
-        apple_tree = g.index(1) 
-        trt = 'ac' 
-        NCI = '' 
+        dates = g.property('Date')
+        dates = self.dates = dict(
+            (v, dates.get(v, dates.get(g.complex(v))))
+            for v in g
+        )
+
+
+        apple_tree = g.index(1)
+        trt = 'ac'
+        NCI = ''
 
         pnames = g.property_names()
 
@@ -224,8 +231,8 @@ class Tree(A):
         TSA_2019 = pi * (A1.diameter_b)**2 / 4.
 
         #  Number of vegetative of floral long shoots (>=5cm) in 2018 and 2019
-        # Colonne type pour le type et length pour la longueur pour 2018 
-        # mes informations sont a l'echelle B dans la plupart des cas 
+        # Colonne type pour le type et length pour la longueur pour 2018
+        # mes informations sont a l'echelle B dans la plupart des cas
         # (peut etre des cas a l'echelle S). Pour 2019 a l'echelle S
 
         # cat = g.property('type')
@@ -241,53 +248,53 @@ class Tree(A):
         # short = lambda x: 0<= length.get(x,-1) < 5
         # la18 = lambda x: leaf_area18.get(x,0)
         # la19 = lambda x: leaf_area19.get(x,0)
-        
-        dates = g.property('Date')
+
+        #dates = g.property('Date')
         lines = g.property('_line')
-        vs18 = [v for v, d in dates.items() if d =='2018'] 
-        vs19 = [v for v, d in dates.items() 
-                    if (d =='2019') or 
+        vs18 = [v for v, d in dates.items() if d =='2018']
+        vs19 = [v for v, d in dates.items()
+                    if (d =='2019') or
                        (d =='2018' and isinstance(lines.get(v), list))
-               ] 
-        L_shoot_V_2018 = sum(1 for v in vs18 
-                                if self.is_veg('2018', v) and 
+               ]
+        L_shoot_V_2018 = sum(1 for v in vs18
+                                if self.is_veg('2018', v) and
                                    self.long('2018', v)
-                            ) 
-        L_shoot_F_2018 = sum(1 for v in vs18 
-                                if self.is_flo('2018', v) and 
+                            )
+        L_shoot_F_2018 = sum(1 for v in vs18
+                                if self.is_flo('2018', v) and
                                    self.long('2018', v)
                             )
         L_shoot_V_2019 = sum(1 for v in vs19
-                                if self.is_veg('2019', v) and 
+                                if self.is_veg('2019', v) and
                                    self.long('2019', v)
-                            ) 
-        L_shoot_F_2019 = sum(1 for v in vs19 
-                                if self.is_flo('2019', v) and 
+                            )
+        L_shoot_F_2019 = sum(1 for v in vs19
+                                if self.is_flo('2019', v) and
                                    self.long('2019', v)
                             )
 
         #  Number of vegetative of floral short shoots (<5cm) in 2018 and 2019
-        S_shoot_V_2018 = sum(1 for v in vs18 
-                                if self.is_veg('2018', v) and 
+        S_shoot_V_2018 = sum(1 for v in vs18
+                                if self.is_veg('2018', v) and
                                    self.short('2018', v)
-                            ) 
-        S_shoot_F_2018 = sum(1 for v in vs18 
-                                if self.is_flo('2018', v) and 
+                            )
+        S_shoot_F_2018 = sum(1 for v in vs18
+                                if self.is_flo('2018', v) and
                                    self.short('2018', v)
                             )
         S_shoot_V_2019 = sum(1 for v in vs19
-                                if self.is_veg('2019', v) and 
-                                   self.short('2019', v)
-                            ) 
-        S_shoot_F_2019 = sum(1 for v in vs19 
-                                if self.is_flo('2019', v) and 
+                                if self.is_veg('2019', v) and
                                    self.short('2019', v)
                             )
-        
+        S_shoot_F_2019 = sum(1 for v in vs19
+                                if self.is_flo('2019', v) and
+                                   self.short('2019', v)
+                            )
+
         # Number of vegetative buds in 2018 and 2019
         nb_V_2018 = sum(1 for v in vs18 if self.is_veg('2018', v))
         nb_V_2019 = sum(1 for v in vs19 if self.is_veg('2019', v))
-        
+
         # Number of floral buds in 2018 and 2019
         nb_F_2018 = sum(1 for v in vs18 if self.is_flo('2018', v))
         nb_F_2019 = sum(1 for v in vs19 if self.is_flo('2019', v))
@@ -297,7 +304,7 @@ class Tree(A):
         nb_L_2019 = sum(1 for v in vs19 if self.is_latent('2019',v))
 
         # Leaf area (cm2) in 2018 and 2019
-        # 
+        #
         LA_2018 = sum(self.la18(v) for v in vs18)
         LA_2019 = sum(self.la19(v) for v in vs19)
 
@@ -311,12 +318,14 @@ class Tree(A):
         trunk_len[-1] = length.get(last_S, 0)
         total_length = sum(trunk_len)
 
-        Elongation = total_length / A1.diameter_b 
-        # (diametre base (A1) - diametre sommet) / longueur total 
-        
+        Elongation = total_length / A1.diameter_b
+        # (diametre base (A1) - diametre sommet) / longueur total
+
         A3 = g.node(trunk[2])
         Tapper = (A1.diameter_b - A3.diameter_b) / total_length
 
+        # number of node on the trunk
+        nb_trunk_S = len(g.Trunk (2, scale=3))
 
         df = pd.DataFrame( OrderedDict(
             apple_tree=[apple_tree],
@@ -353,33 +362,33 @@ class Branches(A):
 
     def dataframe(self):
         """
-        - BSA_2018/2019: 
-            Branch section area: pi*diameter_b**2/4 (cm2) or diameter if diameter_b has no value 
+        - BSA_2018/2019:
+            Branch section area: pi*diameter_b**2/4 (cm2) or diameter if diameter_b has no value
             Information  at scale +B in column diameter_b or diameter if no diamter_b
-        - B_dist: 
+        - B_dist:
             branch distance on the trunk (0 base of the tree 1 apex of the tree)
-        - B_lgth_2018/2019: 
+        - B_lgth_2018/2019:
             branch length (cm) in 2018 (2017+2018) and 2019 (2017+2018+2019)
-        - L_shoot_V/F_2018/2019: 
+        - L_shoot_V/F_2018/2019:
             Number of vegetative of floral long shoots (>=5cm) on the branch in 2018 and 2019
-        - S_shoot_V/F_2018/2019: 
+        - S_shoot_V/F_2018/2019:
             Number of vegetative of floral short shoots (<5cm) on the branch in 2018 and 2019
-        - nb_V_2018/2019: 
+        - nb_V_2018/2019:
             Number of vegetative buds on the branch in 2018 and 2019
-        - nb_F_2018/2019: 
+        - nb_F_2018/2019:
             Number of floral buds on the branch in 2018 and 2019
-        - nb_L_2018/2019: 
+        - nb_L_2018/2019:
             Number of latent buds on the branch in 2018 and 2019
-        - LA_2018/2019: 
+        - LA_2018/2019:
             Leaf area (cm2) in 2018 and 2019
-        - Elongation : 
+        - Elongation :
             longueur de la branche / diametre base de la branche
-        - Tapper : 
+        - Tapper :
             (diametre base de la branche (2017 ou 2018) - diametre sommet de la branche(2019)) / longueur total de la branche
 
         """
         g = self.g
-        
+
         apple_tree = g.index(1)
 
         # Extract branches
@@ -488,7 +497,7 @@ def forest(fns=None):
             continue
 
     all_df = pd.concat(dfs, axis=0, ignore_index=True)
-    all_df.to_csv('trees.csv', sep=';', index=False)
-    
+    #all_df.to_csv('trees.csv', sep=';', index=False)
+
 
     return all_df, errors
