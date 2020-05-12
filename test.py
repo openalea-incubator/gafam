@@ -42,4 +42,55 @@ def test2():
     print(errors)
     return labels
 
-    
+def test3():
+    # analysis branch scale
+
+    fn = Path(u'data/mtg_gafam/p97.txt')
+    g=MTG(fn, has_date=True)
+
+    # dates 
+    dates = g.property('Date')
+    dates = dict(
+        (v, dates.get(v, dates.get(g.complex(v))))
+        for v in g
+    )
+
+    # height
+    def _heights():
+        v = next(g.component_roots_at_scale_iter(0, scale=3))
+        height = dict()
+        for v in traversal.pre_order2(g, v):
+            height[v] = height.get(g.parent(v), -1)+1
+        return height
+
+
+    trunk = g.Trunk(2)
+
+    brs = [b for v in trunk for b in g.Sons(v, EdgeType='+')]
+    #brs.insert(0,2)
+
+    vtrunk = g.Trunk(3)
+    #vbrs = [b for v in vtrunk for b in g.Sons(v, EdgeType='+')]
+
+
+    anchors = dict((b, b-1) for b in brs if g.parent(b))
+    heights = _heights()
+
+    # Branch Heights
+    tip_height = float(heights[vtrunk[-1]])
+    b_dists = [(heights[anchors[v]]+1)/tip_height for v in brs]
+
+
+    # diameter
+    d18 = g.property('diameter_b2018').copy()
+    d18.update(g.property('diameter_2018'))
+    d19 = g.property('diameter_b')
+    #def diam(v, year):
+
+def test4()
+    fn = Path(u'data/mtg_gafam/p97.txt')
+    g=MTG(fn, has_date=True)
+    A1 = g.node(2)
+    trunk = g.Trunk(2)
+    A1 = g.node(trunk[0])
+    A3 = g.node(trunk[2])

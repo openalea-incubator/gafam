@@ -3,6 +3,8 @@ from path import Path
 import pandas as pd
 from collections import OrderedDict
 from openalea.mtg import *
+from openalea.mtg import algo, traversal
+
 
 def load_data():
     "Return a list of MTGs"
@@ -172,6 +174,17 @@ class A(object):
 
 class Tree(A):
 
+    def dates(self):
+        g = self.g
+        dates = g.property('Date')
+        dates = dict(
+            (v, dates.get(v, dates.get(g.complex(v))))
+            for v in g
+        )
+
+        return dates
+
+
     def dataframe(self):
         """ Extract Tree level information
         return a dataframe
@@ -208,12 +221,8 @@ class Tree(A):
         """
         g = self.g
 
-        dates = g.property('Date')
-        dates = self.dates = dict(
-            (v, dates.get(v, dates.get(g.complex(v))))
-            for v in g
-        )
-
+        dates = self.dates()
+        
 
         apple_tree = g.index(1)
         trt = 'ac'
@@ -311,21 +320,28 @@ class Tree(A):
         LA_2018 = sum(self.la18(v) for v in vs18)
         LA_2019 = sum(self.la19(v) for v in vs19)
 
-        # longueur du tronc (A1+A2+A3+dernier /S) / diametre base  (A1)
+        # longueur du tronc length graft point +(A1+A2+A3) / diametre base  (A1)
         trunk = g.Trunk(2)
         assert(len(trunk) == 4)
 
+        A1 = g.node(trunk[0])
+        A3 = g.node(trunk[2])
         length = g.property('length')
         trunk_len = [length.get(v, 0) for v in trunk]
-        last_S = g.components(trunk[-1])[-1]
-        trunk_len[-1] = length.get(last_S, 0)
-        total_length = sum(trunk_len)
+        # A4 = trunk[-1]
+        # if A4 not in length:
+        #     first_S = next(g.component_roots_iter(A4))
+        #     A4_shoots=list(algo.axis(g, first_S, RestrictedTo='SameComplex'))
+        #     trunk_len[-1] = sum(length.get(v, 0) for v in A4_shoots)
+        total_length = sum(trunk_len[:-1]) + A1.length_graftpoint_ram
 
-        Elongation = total_length / A1.diameter_b
+        # Mean diameter: (A1.diameter_b + A3.diameter_a) /2
+        mean_diameter = (A1.diameter_b + A3.diameter_a) / 2.
+        Elongation = total_length / mean_diameter
         # (diametre base (A1) - diametre sommet) / longueur total
 
         A3 = g.node(trunk[2])
-        Tapper = (A1.diameter_b - A3.diameter_b) / total_length
+        Tapper = (A1.diameter_b - A3.diameter_a) / total_length
 
         # number of node on the trunk
         nb_Trunk_S = len(g.Trunk (2, Scale=3))
@@ -362,7 +378,19 @@ class Tree(A):
             'Elongation Tapper '.split(' '))
         return df
 
-class Branches(A):
+class Branches(Tree):
+
+    def heights(self):
+        g = self.g
+        v = next(g.component_roots_at_scale_iter(0, scale=3))
+        height = dict()
+        for v in traversal.pre_order2(g, v):
+            height[v] = height.get(g.parent(v), -1)+1
+
+        return height
+
+    def diameter(self, v, year):
+        pass
 
     def dataframe(self):
         """
@@ -391,17 +419,32 @@ class Branches(A):
             (diametre base de la branche (2017 ou 2018) - diametre sommet de la branche(2019)) / longueur total de la branche
 
         """
+        #tree = super(Branches, self).dataframe()
+        
         g = self.g
+        dates = self.dates()
 
         apple_tree = g.index(1)
 
-        # Extract branches
-        brs = [v for v in g.vertices(scale=2) if g.edge_type(v)=='+']
+        # Extract branches first vertex of each branch beared by the trunk
+        trunk = g.Trunk(2)
+        brs = [b for v in trunk for b in g.Sons(v, EdgeType='+')]
         brs.insert(0,2)
 
-        BSA_2018
+        vtrunk = g.Trunk(3)
+        #vbrs = [b for v in vtrunk for b in g.Sons(v, EdgeType='+')]
+
+        anchors = dict((b, b-1) for b in brs)
+        heights = self.heights()
+
+        # Branch Heights
+        tip_height = float(heights[vtrunk[-1]])
+        b_dists = [(heights[anchors[v]]+1)/tip_height for v in brs]
+
+
+        BSA_2018 
         BSA_2019
-        B_dist
+        B_dist = b_dists
         B_lgth_2018
         B_lgth_2019
         L_shoot_V_2018
