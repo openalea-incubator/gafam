@@ -42,6 +42,37 @@ def test2():
     print(errors)
     return labels
 
+def date(g):
+    dates = g.property('Date')
+    dates = dict(
+        (v, dates.get(v, dates.get(g.complex(v))))
+        for v in g
+    )
+    nd = [v for v in g.vertices(scale=2) if dates.get(v) is None]
+    for v in nd:
+        for c in g.components(v):
+            d = dates.get(c)
+            if d:
+                dates[v] = d
+                break
+
+    return dates
+
+def height(g):
+    v = next(g.component_roots_at_scale_iter(0, scale=3))
+    height = dict()
+    for v in traversal.pre_order2(g, v):
+        height[v] = height.get(g.parent(v), -1)+1
+    return height
+
+def att(g, year, name, v, default=None):
+    p = g.property(name).get(v, default)
+    if isinstance(p, list):
+        p = dict(p)
+        return p[year]
+    else:
+        return p
+
 def test3():
     # analysis branch scale
 
@@ -49,20 +80,10 @@ def test3():
     g=MTG(fn, has_date=True)
 
     # dates 
-    dates = g.property('Date')
-    dates = dict(
-        (v, dates.get(v, dates.get(g.complex(v))))
-        for v in g
-    )
+    dates = date(g)
 
     # height
-    def _heights():
-        v = next(g.component_roots_at_scale_iter(0, scale=3))
-        height = dict()
-        for v in traversal.pre_order2(g, v):
-            height[v] = height.get(g.parent(v), -1)+1
-        return height
-
+    heights = height(g)
 
     trunk = g.Trunk(2)
 
@@ -80,17 +101,67 @@ def test3():
     tip_height = float(heights[vtrunk[-1]])
     b_dists = [(heights[anchors[v]]+1)/tip_height for v in brs]
 
+def test_diam(fn=None, threshold=10):
+    if fn is None:
+        fn = Path(u'data/mtg_gafam/p97.txt')
+        fn = Path(u'data/mtg_gafam/p1.txt')
+    g=MTG(fn, has_date=True)
 
+    dates = date(g)
     # diameter
     d18 = g.property('diameter_b2018').copy()
     d18.update(g.property('diameter_2018'))
-    d19 = g.property('diameter_b')
+    d19 = g.property('diameter_b').copy()
+    d19.update(g.property('diameter'))
+
     #def diam(v, year):
 
-def test4()
+    trunk = g.Trunk(2)
+    
+    brs = [b for v in trunk for b in g.Sons(v, EdgeType='+')]
+
+    #dm = lambda v: max(d18.get(x,0) for x in g.Axis(v))
+    #bsa18 = [dm(b) for b in brs]
+
+    def length(v, y='2018'):
+        l0 =  att(g, y,'length',v,0)
+        if l0 == 0:
+            l0 = max(att(g, y,'length', b, 0) for b in g.components(v))
+        return l0
+
+    #OK
+    nod =[b for b in brs if (not d18.get(b, d19.get(b))) 
+                            and not(0 < length(b) < threshold)
+                            and dates.get(b) !='2019']
+    
+
+    return nod, g
+
+def error_diams(threshold=10):
+    fns = load_data()
+    errors = []
+    text = []
+    for fn in fns:
+        nod, g = test_diam(fn, threshold=threshold)
+        if nod:
+            errors.append(fn)
+            l = [g.label(v) for v in nod]
+            l.insert(0, fn.name)
+            text.append(' '.join(l))
+    text = '\n'.join(text)
+    return errors, text
+
+def test_length():
     fn = Path(u'data/mtg_gafam/p97.txt')
     g=MTG(fn, has_date=True)
-    A1 = g.node(2)
+
+    dates = date(g)
     trunk = g.Trunk(2)
-    A1 = g.node(trunk[0])
-    A3 = g.node(trunk[2])
+    brs = [b for v in trunk for b in g.Sons(v, EdgeType='+')]
+    br18 = lambda b: [v for v in g.Axis(b) if dates.get(v) in ['2017', '2018']]
+    br19 = lambda b: g.Axis(b)
+
+    _len = lambda y, l: sum(att(g, y, 'length', v) for v in l)
+
+    l18= [_len('2018', br18(b)) for b in brs]
+    l19= [_len('2019', br19(b)) for b in brs]

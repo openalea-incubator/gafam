@@ -169,8 +169,6 @@ class A(object):
     def la19(self, v):
         return self.att('2019', 'leaf_area_2019', v, 0)
 
-    def date(self, v):
-        g=self.g
 
 class Tree(A):
 
@@ -182,6 +180,14 @@ class Tree(A):
             for v in g
         )
 
+        nd = [v for v in g.vertices(scale=2) if dates.get(v) is None]
+        for v in nd:
+            for c in g.components(v):
+                d = dates.get(c)
+                if d:
+                    dates[v] = d
+                    break
+        self._dates = dates
         return dates
 
 
@@ -214,9 +220,9 @@ class Tree(A):
             - LA_2018/2019:
                 Leaf area (cm2) in 2018 and 2019
             - Elongation :
-                longueur du tronc (A1+A2+A3+dernier /S) / diametre base  (A1)
+                longueur du tronc (A1+A2+A3+graft point) / mean diameter (base A1 + apex A3)/2
             - Tapper :
-                (diametre base (A1) - diametre sommet) / longueur total
+                (diameter base (A1) - diameter apex (A3) / longueur trunk
 
         """
         g = self.g
@@ -389,8 +395,38 @@ class Branches(Tree):
 
         return height
 
-    def diameter(self, v, year):
-        pass
+
+    def diameter(self, v, year='2018', d18=None, d19=None):
+        g = self.g
+        dates = self._dates
+        default = 0.3
+        if year == '2018':
+            if v in d18:
+                return d18[v]
+            elif dates.get(v) == '2019':
+                return 0
+            else:
+                return default
+        else:
+            return d19.get(v, default)
+
+    def length(self, v, y='2018'):
+        g = self.g
+        l0 =  self.att(y,'length',v,0)
+        if l0 == 0:
+            l0 = max(self.att(y,'length', b, 0) for b in g.components(v))
+        return l0
+
+
+    def branch_length(self, v, is_19=False):
+        g = self.g
+        dates = self._dates
+        y= '2019' if is_19 else '2018'
+        if is_19:
+            bl = sum( self.length(v,'2019') for b in g.Axis(v) )                
+        else:
+            bl = sum( self.length(v,'2018') for b in g.Axis(v) if dates[b] != '2019')
+        return bl                
 
     def dataframe(self):
         """
@@ -402,7 +438,7 @@ class Branches(Tree):
         - B_lgth_2018/2019:
             branch length (cm) in 2018 (2017+2018) and 2019 (2017+2018+2019)
         - L_shoot_V/F_2018/2019:
-            Number of vegetative of floral long shoots (>=5cm) on the branch in 2018 and 2019
+            Number of vegetative of floral long shoots (>=5cm) on the for in 2018 and 2019
         - S_shoot_V/F_2018/2019:
             Number of vegetative of floral short shoots (<5cm) on the branch in 2018 and 2019
         - nb_V_2018/2019:
@@ -429,7 +465,6 @@ class Branches(Tree):
         # Extract branches first vertex of each branch beared by the trunk
         trunk = g.Trunk(2)
         brs = [b for v in trunk for b in g.Sons(v, EdgeType='+')]
-        brs.insert(0,2)
 
         vtrunk = g.Trunk(3)
         #vbrs = [b for v in vtrunk for b in g.Sons(v, EdgeType='+')]
@@ -441,38 +476,119 @@ class Branches(Tree):
         tip_height = float(heights[vtrunk[-1]])
         b_dists = [(heights[anchors[v]]+1)/tip_height for v in brs]
 
+        # TODO: Missing data for diameter
+        default_diameter = 0.3
+        
 
-        BSA_2018 
-        BSA_2019
+        # Compute diameter
+        d18 = g.property('diameter_b2018').copy()
+        d18.update(g.property('diameter_2018'))
+        d19 = g.property('diameter_b').copy()
+        d19.update(g.property('diameter'))
+
+        BSA_2018 = [self.diameter(b, '2018', d18, d19) for b in brs]
+        BSA_2019 = [self.diameter(b, '2018', d18, d19) for b in brs]
+        
+        B_pos = [(heights[anchors[b]]+1) for b in brs]
         B_dist = b_dists
-        B_lgth_2018
-        B_lgth_2019
-        L_shoot_V_2018
-        L_shoot_V_2018
-        L_shoot_F_2019
-        L_shoot_F_2019
+        
+        # WIP
+        length = g.property('length')
+        B_lgth_2018 = [self.branch_length(b, is_19=False) for b in brs]
+        B_lgth_2019 = [self.branch_length(b, is_19=True) for b in brs]
 
-        S_shoot_V_2018
-        S_shoot_V_2018
-        S_shoot_F_2019
-        S_shoot_F_2019
-        nb_V_2018
-        nb_V_2019
-        nb_F_2018
-        nb_F_2019
-        nb_L_2018
-        nb_L_2019
+        # TODO
+        lines = g.property('_line')
+        def isdyn(v):
+            return isinstance(lines.get(v), list)
 
-        LA_2018
-        LA_2019
+        def br18(b):
+            axis = g.Axis(b)
+            comps = [c for v in axis for c in g.components(v) if dates.get(c)=='2018']
+            branch = [a for a in axis if dates.get(c)=='2018']
+            branch.extend(comps)
+            return branch
 
-        Elongation
-        Tapper
+        def br19(b):
+            
+            axis = g.Axis(b)
+            comps = [c for v in axis for c in g.components(v) 
+                    if dates.get(c)=='2019' or 
+                    (dates.get(c) =='2018' and isdyn(v))]
+            branch = [a for a in axis if dates.get(c)=='2019']
+            branch.extend(comps)
+            return branch
 
+        
+        L_shoot_V_2018 = [sum(1 for v in br18(b)
+                                if self.is_veg('2018', v) and
+                                   self.long('2018', v)
+                            ) for b in brs]
+        L_shoot_F_2018 = [sum(1 for v in br18(b)
+                                if self.is_flo('2018', v) and
+                                   self.long('2018', v)
+                            ) for b in brs]
+        L_shoot_V_2019 = [sum(1 for v in br19(b)
+                                if self.is_veg('2019', v) and
+                                   self.long('2019', v)
+                            ) for b in brs]
+        L_shoot_F_2019 = [sum(1 for v in br19(b)
+                                if self.is_flo('2019', v) and
+                                   self.long('2019', v)
+                            ) for b in brs]
+
+
+        #  Number of vegetative of floral short shoots (<5cm) in 2018 and 2019
+        S_shoot_V_2018 = [sum(1 for v in br18(b)
+                                if self.is_veg('2018', v) and
+                                   self.short('2018', v)
+                            ) for b in brs]
+        S_shoot_F_2018 = [sum(1 for v in br18(b)
+                                if self.is_flo('2018', v) and
+                                   self.short('2018', v)
+                            ) for b in brs]
+        S_shoot_V_2019 = [sum(1 for v in br19(b)
+                                if self.is_veg('2019', v) and
+                                   self.short('2019', v)
+                            ) for b in brs]
+        S_shoot_F_2019 = [sum(1 for v in br19(b)
+                                if self.is_flo('2019', v) and
+                                   self.short('2019', v)
+                            ) for b in brs]
+
+        # Number of vegetative buds in 2018 and 2019
+        nb_V_2018 = [sum(1 for v in br18(b) if self.is_veg('2018', v))
+                        for b in brs ]
+        nb_V_2019 = [sum(1 for v in br19(b) if self.is_veg('2019', v))
+                        for b in brs ]
+
+        # Number of floral buds in 2018 and 2019
+        nb_F_2018 = [sum(1 for v in br18(b) if self.is_flo('2018', v))
+                        for b in brs ]
+        nb_F_2019 = [sum(1 for v in br19(b) if self.is_flo('2019', v))
+                        for b in brs ]
+
+        # Number of latent buds in 2018 and 2019
+        # Bug: latent bugs have not always a date
+        nb_L_2018 = [sum(1 for v in br18(b) if self.is_latent('2018', v))
+                        for b in brs ]
+        nb_L_2019 = [sum(1 for v in br19(b) if self.is_latent('2019',v))
+                        for b in brs ]
+
+        # Leaf area (cm2) in 2018 and 2019
+        #
+        LA_2018 = [sum(self.la18(v) for v in br18(b)) for b in brs]
+        LA_2019 = [sum(self.la19(v) for v in br19(b)) for b in brs]
+
+        Elongation = [(BSA_2019[i] / B_lgth_2019[i]  ) for i in range(len(brs))]
+        Tapper = []
+        n= len(brs)
 
         columns= """
+        apple_tree
         BSA_2018
         BSA_2019
+        B_pos
         B_dist
         B_lgth_2018
         B_lgth_2019
@@ -496,29 +612,31 @@ class Branches(Tree):
         Tapper
         """.split()
         df = pd.DataFrame( OrderedDict(
-            apple_tree=[apple_tree],
-            trt=[trt],
-            NCI=[NCI],
-            TSA_2018=[TSA_2018],
-            TSA_2019=[TSA_2019],
-            L_shoot_V_2018=[L_shoot_V_2018],
-            L_shoot_V_2019=[L_shoot_V_2019],
-            L_shoot_F_2018=[L_shoot_F_2018],
-            L_shoot_F_2019=[L_shoot_F_2019],
-            S_shoot_V_2018=[S_shoot_V_2018],
-            S_shoot_V_2019=[S_shoot_V_2019],
-            S_shoot_F_2018=[S_shoot_F_2018],
-            S_shoot_F_2019=[S_shoot_F_2019],
-            nb_V_2018=[nb_V_2018],
-            nb_V_2019=[nb_V_2019],
-            nb_F_2018=[nb_F_2018],
-            nb_F_2019=[nb_F_2019],
-            nb_L_2018=[nb_L_2018],
-            nb_L_2019=[nb_L_2019],
-            LA_2018=[LA_2018],
-            LA_2019=[LA_2019],
-            Elongation=[Elongation],
-            Tapper=[Tapper],
+            apple_tree=[apple_tree]*n,
+            BSA_2018=BSA_2018,
+            BSA_2019=BSA_2019,
+            B_pos=B_pos,
+            B_dist = B_dist,
+            B_lgth_2018=B_lgth_2018,
+            B_lgth_2019=B_lgth_2019,
+            L_shoot_V_2018=L_shoot_V_2018,
+            L_shoot_V_2019=L_shoot_V_2019,
+            L_shoot_F_2018=L_shoot_F_2018,
+            L_shoot_F_2019=L_shoot_F_2019,
+            S_shoot_V_2018=S_shoot_V_2018,
+            S_shoot_V_2019=S_shoot_V_2019,
+            S_shoot_F_2018=S_shoot_F_2018,
+            S_shoot_F_2019=S_shoot_F_2019,
+            nb_V_2018=nb_V_2018,
+            nb_V_2019=nb_V_2019,
+            nb_F_2018=nb_F_2018,
+            nb_F_2019=nb_F_2019,
+            nb_L_2018=nb_L_2018,
+            nb_L_2019=nb_L_2019,
+            LA_2018=LA_2018,
+            LA_2019=LA_2019,
+            Elongation=Elongation,
+            Tapper=[0]*n,
             ),
             columns=columns)
         return df
@@ -545,6 +663,31 @@ def forest(fns=None):
 
     all_df = pd.concat(dfs, axis=0, ignore_index=True)
     all_df.to_csv('trees.csv', sep=';', index=False)
+
+
+    return all_df, errors
+
+def branches(fns=None):
+    if fns is None:
+        fns=load_data()
+
+    dfs = []
+    errors=[]
+    for fn in fns:
+        try:
+            g=MTG(fn, has_date=True)
+            df = Branches(g)()
+            dfs.append(df)
+        except:
+            print('#'*80)
+            print('Error with file {}'.format(fn))
+            print('#'*80)
+            print()
+            errors.append(fn)
+            continue
+
+    all_df = pd.concat(dfs, axis=0, ignore_index=True)
+    all_df.to_csv('branches.csv', sep=';', index=False)
 
 
     return all_df, errors
