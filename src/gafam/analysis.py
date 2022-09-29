@@ -691,3 +691,8 @@ def branches(fns=None):
 
 
     return all_df, errors
+
+# Extract sequences sous forme de liste de liste
+#  longueur totale, 
+
+# Visualisation
