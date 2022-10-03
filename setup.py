@@ -21,7 +21,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="gafam",
-    version="1.0",
+    version="1.0.0b0",
     description="Growing AgroForestry with Apple in Mediterranean climate",
     long_description="Analysis of Growing AgroForestry with Apple in Mediterranean climate",
 
