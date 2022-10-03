@@ -1,4 +1,4 @@
-from analysis import *
+from gafam.analysis import *
 
 def test1():
     fns = [Path(u'data/mtg_gafam/p1.txt'),

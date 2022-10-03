@@ -1,7 +1,9 @@
 from math import pi
 from path import Path
-import pandas as pd
 from collections import OrderedDict
+
+import pandas as pd
+
 from openalea.mtg import *
 from openalea.mtg import algo, traversal
 
