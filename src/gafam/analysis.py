@@ -7,12 +7,11 @@ import pandas as pd
 from openalea.mtg import *
 from openalea.mtg import algo, traversal
 
+from . import data
 
 def load_data():
     "Return a list of MTGs"
-    d = Path('data')/'mtg_gafam'
-    fns = d.glob('*.txt')
-    fns = sorted(fns, key= lambda x:int(x.name.split('.')[0][1:]))
+    return data.files()
     return fns
 
 def missing_components(g):
@@ -644,7 +643,7 @@ class Branches(Tree):
         return df
 
 
-def forest(fns=None):
+def forest(fns=None, save=False):
     if fns is None:
         fns=load_data()
 
@@ -652,6 +651,8 @@ def forest(fns=None):
     errors=[]
     for fn in fns:
         try:
+            print('#'*80)
+            print("MTG is ", fn)
             g=MTG(fn, has_date=True)
             df = Tree(g)()
             dfs.append(df)
@@ -664,12 +665,13 @@ def forest(fns=None):
             continue
 
     all_df = pd.concat(dfs, axis=0, ignore_index=True)
-    all_df.to_csv('trees.csv', sep=';', index=False)
+    if save:
+        all_df.to_csv('trees.csv', sep=';', index=False)
 
 
     return all_df, errors
 
-def branches(fns=None):
+def branches(fns=None, save=False):
     if fns is None:
         fns=load_data()
 
@@ -677,6 +679,8 @@ def branches(fns=None):
     errors=[]
     for fn in fns:
         try:
+            print('#'*80)
+            print("MTG is ", fn)
             g=MTG(fn, has_date=True)
             df = Branches(g)()
             dfs.append(df)
@@ -689,7 +693,8 @@ def branches(fns=None):
             continue
 
     all_df = pd.concat(dfs, axis=0, ignore_index=True)
-    all_df.to_csv('branches.csv', sep=';', index=False)
+    if save:
+        all_df.to_csv('branches.csv', sep=';', index=False)
 
 
     return all_df, errors
