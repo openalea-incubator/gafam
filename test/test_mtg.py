@@ -1,4 +1,5 @@
 from gafam.analysis import *
+from gafam.data import file
 
 def test_forest():
     df, errors = forest()
@@ -11,3 +12,7 @@ def test_branch():
 
     return df, errors
 
+def test_p9():
+    fn = file('p9')
+    g = MTG(fn, has_date=True)
+    g.display(max_scale=3)
