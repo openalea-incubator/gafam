@@ -1321,7 +1321,7 @@ ENTITY-CODE										treedate	Date	length_graftpoint_ram	diameter	diameter_b	dia
 ^/S333																			BL												
 ^<S334																			BL												
 ^<S335																			BL												
-^/S336																															
+^<S336																															
 	+B62										2018					0.9	335		FL		1	2	0		19.92031	21.47621	0	0			
 	^<B62.1																														
 	^/S337										2019								BL												
