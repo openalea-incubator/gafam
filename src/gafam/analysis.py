@@ -488,7 +488,7 @@ class Branches(Tree):
         d19.update(g.property('diameter'))
 
         BSA_2018 = [self.diameter(b, '2018', d18, d19) for b in brs]
-        BSA_2019 = [self.diameter(b, '2018', d18, d19) for b in brs]
+        BSA_2019 = [self.diameter(b, '2019', d18, d19) for b in brs]
         
         B_pos = [(heights[anchors[b]]+1) for b in brs]
         B_dist = b_dists
@@ -506,7 +506,7 @@ class Branches(Tree):
         def br18(b):
             axis = g.Axis(b)
             comps = [c for v in axis for c in g.components(v) if dates.get(c)=='2018']
-            branch = [a for a in axis if dates.get(c)=='2018']
+            branch = [a for a in axis if dates.get(a)=='2018']
             branch.extend(comps)
             return branch
 
@@ -516,7 +516,7 @@ class Branches(Tree):
             comps = [c for v in axis for c in g.components(v) 
                     if dates.get(c)=='2019' or 
                     (dates.get(c) =='2018' and isdyn(v))]
-            branch = [a for a in axis if dates.get(c)=='2019']
+            branch = [a for a in axis if dates.get(a)=='2019']
             branch.extend(comps)
             return branch
 
@@ -581,7 +581,7 @@ class Branches(Tree):
         LA_2018 = [sum(self.la18(v) for v in br18(b)) for b in brs]
         LA_2019 = [sum(self.la19(v) for v in br19(b)) for b in brs]
 
-        Elongation = [(BSA_2019[i] / B_lgth_2019[i]  ) for i in range(len(brs))]
+        Elongation = [(BSA_2019[i] / B_lgth_2019[i]) if B_lgth_2019[i] else 0. for i in range(len(brs))]
         Tapper = []
         n= len(brs)
 
