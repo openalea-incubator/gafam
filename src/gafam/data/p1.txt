@@ -47,7 +47,7 @@ diameter_a2018	REAL
 																																	
 MTG :																																	
 																																	
-ENTITY-CODE										treedate	Date	length_graftpoint_ram	diameter	diameter_b	diameter_a	length	azimuth	angle	type	length_bourse	nb_leaves	nb_flowers	nb_fruits	fruit_drops	leaf_area_2018	leaf_area_2018b	leaf_area_2019	leaf_area_2019b	diameter_2018	diameter_b2018	diameter_a2018	volume_2019	volume_2018
+ENTITY-CODE										treedate	Date	length_graftpoint_ram	diameter	diameter_b	diameter_a	length	azimuth	angle	type	length_bourse	nb_leaves	nb_flowers	nb_fruits	fruit_drops	leaf_area_2018	leaf_area_2018b	leaf_area_2019	leaf_area_2019b	diameter_2018	diameter_b2018	diameter_a2018
 /P1										09/2019															15078.60357	16589.93566	26798.58694	35005.66519					
 ^/A1											2016	54.5		3.15	2.2	48														2.23	2.09	1146.201048	
 ^/S1																																	
