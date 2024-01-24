@@ -12,7 +12,6 @@ from . import data
 def load_data():
     "Return a list of MTGs"
     return data.files()
-    return fns
 
 def missing_components(g):
     missings = [v for v in g.vertices(scale=2) if g.nb_components(v) == 0]
@@ -79,6 +78,8 @@ def tree(g):
 def error_date(g):
     """ Extract all the same vertices at dat 2018 an 2019
     that are not the same  (define with *)
+
+    TODO: Remove
     """
 
     date = g.property('realisation')
@@ -176,20 +177,19 @@ class Tree(A):
     def dates(self):
         g = self.g
         dates = g.property('Date')
-        dates = dict(
-            (v, dates.get(v, dates.get(g.complex(v))))
-            for v in g
-        )
-
-        nd = [v for v in g.vertices(scale=2) if dates.get(v) is None]
-        for v in nd:
-            for c in g.components(v):
-                d = dates.get(c)
-                if d:
-                    dates[v] = d
-                    break
-        self._dates = dates
-        return dates
+        
+        _dates = dict()
+        for vid in dates:
+            date = dates[vid]
+            if g.scale(vid) == 2:
+                _dates[vid] = date
+            elif g.scale(vid) == 3:
+                cid = g.complex(vid)
+                _dates[cid] = date
+            else:
+                print('WARNING on dates', vid)
+        self._dates = _dates
+        return _dates
 
 
     def dataframe(self):
@@ -271,8 +271,8 @@ class Tree(A):
         lines = g.property('_line')
         vs18 = [v for v, d in dates.items() if d =='2018']
         vs19 = [v for v, d in dates.items()
-                    if (d =='2019') or
-                       (d =='2018' and isinstance(lines.get(v), list))
+                    if (d=='2019') or
+                       (d=='2018' and isinstance(lines.get(v), list))
                ]
         L_shoot_V_2018 = sum(1 for v in vs18
                                 if self.is_veg('2018', v) and
@@ -451,9 +451,9 @@ class Branches(Tree):
         - LA_2018/2019:
             Leaf area (cm2) in 2018 and 2019
         - Elongation :
-            longueur de la branche / diametre base de la branche
+            branch length / base branch diameter 
         - Tapper :
-            (diametre base de la branche (2017 ou 2018) - diametre sommet de la branche(2019)) / longueur total de la branche
+            (base branch diameter (2017 ou 2018) - top diameter (2019)) / branch total length
 
         """
         #tree = super(Branches, self).dataframe()
@@ -702,4 +702,275 @@ def branches(fns=None, save=False):
 # Extract sequences sous forme de liste de liste
 #  longueur totale, 
 
-# Visualisation
+#################################################################
+# New analysis
+
+class Tree2(Tree):
+    
+    def upscale(self, property_name, operator=sum):
+        """ Upscale properties from lower scale to upper
+
+        Parameters:
+            - property_name : str
+                MTG property
+            - operator: function
+                the upscaling function (default : sum) 
+        """
+        g = self.g
+        max_scale = g.max_scale()
+
+        prop = g.property(property_name)
+
+        for vid in g.vertices(scale=max_scale-1):
+            if (vid not in prop):
+                try:
+                    prop[vid]=operator(prop[v] for v in g.components(vid) if v in prop)
+                except:
+                    prop[vid]=operator(self.att('2019',property_name,v) for v in g.components(vid) if v in prop)
+
+    def is_flo_19(self, vid):
+        nb = sum(1 for v in self.g.components(vid) if self.is_flo('2019',v))
+        return bool(nb)
+
+    def dataframe(self):
+        """ Extract Tree level information
+        return a dataframe
+
+        Algorithms
+        ----------
+            - apple_tree: 
+                Apple tree number
+            - LA_2018/2019 : 
+                sum of the leaf area 
+            - GU_len_2018/2019 : 
+                sum of the GU length
+            - nb_GU_2018/2019:
+                count of the GU
+            - nb_FL_2018/2019: (nb_F)
+                Number of Floral shoots in 2018 and 2019
+            - nb_VG_2018/2019: (nb_V)
+                Number of vegetative buds in 2018 and 2019
+            - nb_BL_2018/2019:
+                Number of latent buds in 2018 and 2019
+            - nb_EX_2018/2019:
+                Number of latent buds in 2018 and 2019
+            - mean_angle_2018/2019:
+                Mean insertion angle
+            - mean_leaves_2018/2019:
+                mean value for all GU
+            - mean_fruits_2018/2019: idem
+            - mean_flowers_2018/2019: idem
+
+
+        """
+        g = self.g
+
+        dates = self.dates()
+        
+        self.upscale('length', operator=sum)
+        self.upscale('leaf_area_2019', operator=sum)
+
+        apple_tree = g.index(1)
+
+        pnames = g.property_names()
+
+        lines = g.property('_line')
+        vs18 = [v for v, d in dates.items() if d !='2019']
+        vs19 = [v for v, d in dates.items()
+                    if (d =='2019') or
+                       (d =='2018' and isinstance(lines.get(v), list))
+               ]
+        # Leaf Area
+        LA_2018 = sum(self.la18(v) for v in vs18) 
+        LA_2019 = sum(self.la19(v) for v in vs19) 
+        
+        # Compute nb of inflorescence
+
+        nb_F_2018 = sum(1 for v in vs18 if self.is_flo('2018', v))
+        nb_F_2019 = sum(1 for v in vs19 if self.is_flo_19(v))
+
+        columns= """
+        apple_tree
+        nb_F_2018
+        nb_F_2019
+        LA_2018
+        LA_2019
+        """.split()
+        df = pd.DataFrame( OrderedDict(
+            apple_tree=[apple_tree],
+            nb_F_2018=[nb_F_2018],
+            nb_F_2019=[nb_F_2019],
+            LA_2018=[LA_2018],
+            LA_2019=[LA_2019],
+            ),
+            columns=columns)
+        return df
+
+
+class Branches2(Tree2):
+
+
+    def dataframe(self):
+        """
+        - nb_F_2018/2019:
+            Number of floral buds on the branch in 2018 and 2019
+        - LA_2018/2019:
+            Leaf area (cm2) in 2018 and 2019
+
+        """
+        #tree = super(Branches, self).dataframe()
+        
+        g = self.g
+        dates = self.dates()
+        lines = g.property('_line')
+
+        self.upscale('length', operator=sum)
+        self.upscale('leaf_area_2019', operator=sum)
+
+        apple_tree = g.index(1)
+
+        vs18 = [v for v, d in dates.items() if d !='2019']
+        vs19 = [v for v, d in dates.items()
+                    if (d =='2019') or
+                       (d =='2018' and isinstance(lines.get(v), list))
+               ]
+        setv18 = set(vs18) 
+        setv19 = set(vs19)
+        
+        # Extract branches first vertex of each branch beared by the trunk
+        trunk = g.Trunk(2)
+        brs = [b for v in trunk for b in g.Sons(v, EdgeType='+')]
+
+        #vtrunk = g.Trunk(3)
+        #vbrs = [b for v in vtrunk for b in g.Sons(v, EdgeType='+')]
+
+        #anchors = dict((b, b-1) for b in brs)
+        #heights = self.heights()
+
+        # Branch Heights
+        #tip_height = float(heights[vtrunk[-1]])
+        #b_dists = [(heights[anchors[v]]+1)/tip_height for v in brs]
+
+        # TODO: Missing data for diameter
+        #default_diameter = 0.3
+        
+
+        # Compute diameter
+        #d18 = g.property('diameter_b2018').copy()
+        #d18.update(g.property('diameter_2018'))
+        #d19 = g.property('diameter_b').copy()
+        #d19.update(g.property('diameter'))
+
+        #BSA_2018 = [self.diameter(b, '2018', d18, d19) for b in brs]
+        #BSA_2019 = [self.diameter(b, '2019', d18, d19) for b in brs]
+        
+        #B_pos = [(heights[anchors[b]]+1) for b in brs]
+        #B_dist = b_dists
+        
+        # WIP
+        #length = g.property('length')
+        #B_lgth_2018 = [self.branch_length(b, is_19=False) for b in brs]
+        #B_lgth_2019 = [self.branch_length(b, is_19=True) for b in brs]
+
+        # TODO
+        def isdyn(v):
+            return isinstance(lines.get(v), list)
+
+        def br18(b):
+            brs = g.Descendants(b)
+            branch = [a for a in brs if a in setv18]
+            return branch
+
+        def br19(b):
+            brs = g.Descendants(b)
+            branch = [a for a in brs if a in setv19]
+            return branch
+
+
+        # Number of floral buds in 2018 and 2019
+        nb_F_2018 = [sum(1 for v in br18(b) if self.is_flo('2018', v))
+                        for b in brs ]
+        nb_F_2019 = [sum(1 for v in br19(b) if self.is_flo_19(v))
+                        for b in brs ]
+
+        #
+        LA_2018 = [sum(self.la18(v) for v in br18(b)) for b in brs]
+        LA_2019 = [sum(self.la19(v) for v in br19(b)) for b in brs]
+
+        branch_name = [g.label(b) for b in brs]
+        n= len(brs)
+
+        columns= """
+        apple_tree
+        branch
+        nb_F_2018
+        nb_F_2019
+        LA_2018
+        LA_2019
+        """.split()
+        df = pd.DataFrame( OrderedDict(
+            apple_tree=[apple_tree]*n,
+            branch=branch_name,
+            nb_F_2018=nb_F_2018,
+            nb_F_2019=nb_F_2019,
+            LA_2018=LA_2018,
+            LA_2019=LA_2019,
+            ),
+            columns=columns)
+        return df
+
+def forest2(fns=None, save=False):
+    if fns is None:
+        fns=load_data()
+
+    dfs = []
+    errors=[]
+    for fn in fns:
+        try:
+            print('#'*80)
+            print("MTG is ", fn)
+            g=MTG(fn, has_date=True)
+            df = Tree2(g)()
+            dfs.append(df)
+        except:
+            print('#'*80)
+            print('Error with file {}'.format(fn))
+            print('#'*80)
+            print()
+            errors.append(fn)
+            continue
+
+    all_df = pd.concat(dfs, axis=0, ignore_index=True)
+    if save:
+        all_df.to_csv('trees2.csv', sep=';', index=False)
+
+
+    return all_df, errors
+
+def branches2(fns=None, save=False):
+    if fns is None:
+        fns=load_data()
+
+    dfs = []
+    errors=[]
+    for fn in fns:
+        try:
+            print('#'*80)
+            print("MTG is ", fn)
+            g=MTG(fn, has_date=True)
+            df = Branches2(g)()
+            dfs.append(df)
+        except:
+            print('#'*80)
+            print('Error with file {}'.format(fn))
+            print('#'*80)
+            print()
+            errors.append(fn)
+            continue
+
+    all_df = pd.concat(dfs, axis=0, ignore_index=True)
+    if save:
+        all_df.to_csv('branches2.csv', sep=';', index=False)
+
+
+    return all_df, errors
