@@ -171,7 +171,6 @@ class A(object):
     def la19(self, v):
         return self.att('2019', 'leaf_area_2019', v, 0)
 
-
 class Tree(A):
 
     def dates(self):
@@ -272,7 +271,7 @@ class Tree(A):
         vs18 = [v for v, d in dates.items() if d =='2018']
         vs19 = [v for v, d in dates.items()
                     if (d=='2019') or
-                       (d=='2018' and isinstance(lines.get(v), list))
+                       (isinstance(lines.get(v), list))
                ]
         L_shoot_V_2018 = sum(1 for v in vs18
                                 if self.is_veg('2018', v) and
@@ -775,7 +774,7 @@ class Tree2(Tree):
         pnames = g.property_names()
 
         lines = g.property('_line')
-        vs18 = [v for v, d in dates.items() if d !='2019']
+        vs18 = [v for v, d in dates.items() if d =='2018']
         vs19 = [v for v, d in dates.items()
                     if (d =='2019') or
                        (d =='2018' and isinstance(lines.get(v), list))
