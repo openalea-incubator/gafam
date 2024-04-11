@@ -52,3 +52,19 @@ for label in labels18:
     print(x)
     _la18+=x
 print('LeafSurface 18', _la18)
+
+_la19 = 0
+for label in labels19:
+    print('%s19'%label,)
+    x = sum(map(t.la19, labels19[label]))
+    print(x)
+    _la19+=x
+print('LeafSurface 19', _la19)
+
+# Count Number of element ABCDE in 2018 and 2019
+print('#'*80)
+for klass in list('ABCDE'):
+    print('%s18'%klass, len(labels18[klass]) ,)
+    print('%s19'%klass, len(labels19[klass]) ,)
+    
+

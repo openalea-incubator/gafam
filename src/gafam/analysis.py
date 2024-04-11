@@ -731,6 +731,22 @@ class Tree2(Tree):
         nb = sum(1 for v in self.g.components(vid) if self.is_flo('2019',v))
         return bool(nb)
 
+    def is_veg_19(self, vid):
+        nb = sum(1 for v in self.g.components(vid) if self.is_veg('2019',v))
+        return bool(nb)
+    
+    def is_latent_19(self, vid):
+        nb = sum(1 for v in self.g.components(vid) if self.is_latent('2019',v))
+        return bool(nb)
+
+    def long_19(self, vid):
+        nb = sum(1 for v in self.g.components(vid) if self.long('2019',v))
+        return bool(nb)
+        
+    def short_19(self, vid):
+        nb = sum(1 for v in self.g.components(vid) if self.short('2019',v))
+        return bool(nb)
+
     def dataframe(self):
         """ Extract Tree level information
         return a dataframe
@@ -770,39 +786,133 @@ class Tree2(Tree):
         self.upscale('leaf_area_2019', operator=sum)
 
         apple_tree = g.index(1)
+        trt = 'ac'
+        NCI = ''
 
         pnames = g.property_names()
+
+        # Trunk section area: pi*diameter_b_2018**2/4 (cm2)
+        A1 = g.node(2)
+
+        if 'diameter_b2018' in g[2]:
+            TSA_2018 = pi * (A1.diameter_b2018)**2 / 4.
+        else:
+            TSA_2018 = pi * (A1.diameter_2018)**2 / 4.
+
+        #Trunk section area: pi*diameter_b**2/4 (cm2)
+        TSA_2019 = pi * (A1.diameter_b)**2 / 4.
 
         lines = g.property('_line')
         vs18 = [v for v, d in dates.items() if d =='2018']
         vs19 = [v for v, d in dates.items()
                     if (d =='2019') or
-                       (d =='2018' and isinstance(lines.get(v), list))
+                       (isinstance(lines.get(v), list))
                ]
         # Leaf Area
         LA_2018 = sum(self.la18(v) for v in vs18) 
         LA_2019 = sum(self.la19(v) for v in vs19) 
         
+        ######
+        L_shoot_V_2018 = sum(1 for v in vs18
+                                if self.is_veg('2018', v) and
+                                   self.long('2018', v)
+                            )
+        L_shoot_F_2018 = sum(1 for v in vs18
+                                if self.is_flo('2018', v) and
+                                   self.long('2018', v)
+                            )
+        L_shoot_V_2019 = sum(1 for v in vs19
+                                if self.is_veg_19(v) and
+                                   self.long_19(v)
+                            )
+        L_shoot_F_2019 = sum(1 for v in vs19
+                                if self.is_flo_19(v) and
+                                   self.long_19(v)
+                            )
+
+        #  Number of vegetative of floral short shoots (<5cm) in 2018 and 2019
+        S_shoot_V_2018 = sum(1 for v in vs18
+                                if self.is_veg('2018', v) and
+                                   self.short('2018', v)
+                            )
+        S_shoot_F_2018 = sum(1 for v in vs18
+                                if self.is_flo('2018', v) and
+                                   self.short('2018', v)
+                            )
+        S_shoot_V_2019 = sum(1 for v in vs19
+                                if self.is_veg_19(v) and
+                                   self.short_19(v)
+                            )
+        S_shoot_F_2019 = sum(1 for v in vs19
+                                if self.is_flo_19(v) and
+                                   self.short_19(v)
+                            )
+
+        # Number of vegetative buds in 2018 and 2019
+        nb_V_2018 = sum(1 for v in vs18 if self.is_veg('2018', v))
+        nb_V_2019 = sum(1 for v in vs19 if self.is_veg_19(v))
+
         # Compute nb of inflorescence
 
         nb_F_2018 = sum(1 for v in vs18 if self.is_flo('2018', v))
         nb_F_2019 = sum(1 for v in vs19 if self.is_flo_19(v))
 
-        columns= """
-        apple_tree
-        nb_F_2018
-        nb_F_2019
-        LA_2018
-        LA_2019
-        """.split()
+        # Number of latent buds in 2018 and 2019
+        # Bug: latent bugs have not always a date
+        nb_L_2018 = sum(1 for v in vs18 if self.is_latent('2018', v))
+        nb_L_2019 = sum(1 for v in vs19 if self.is_latent_19(v))
+
+        # longueur du tronc length graft point +(A1+A2+A3) / diametre base  (A1)
+        trunk = g.Trunk(2)
+        assert(len(trunk) == 4)
+
+        A1 = g.node(trunk[0])
+        A3 = g.node(trunk[2])
+        length = g.property('length')
+        trunk_len = [length.get(v, 0) for v in trunk]
+        total_length = sum(trunk_len[:-1]) + A1.length_graftpoint_ram
+
+        # Mean diameter: (A1.diameter_b + A3.diameter_a) /2
+        mean_diameter = (A1.diameter_b + A3.diameter_a) / 2.
+        Elongation = total_length / mean_diameter
+        # (diametre base (A1) - diametre sommet) / longueur total
+
+        A3 = g.node(trunk[2])
+        Tapper = (A1.diameter_b - A3.diameter_a) / total_length
+
+        # number of node on the trunk
+        nb_Trunk_S = len(g.Trunk (2, Scale=3))
+
         df = pd.DataFrame( OrderedDict(
             apple_tree=[apple_tree],
+            trt=[trt],
+            NCI=[NCI],
+            TSA_2018=[TSA_2018],
+            TSA_2019=[TSA_2019],
+            L_shoot_V_2018=[L_shoot_V_2018],
+            L_shoot_V_2019=[L_shoot_V_2019],
+            L_shoot_F_2018=[L_shoot_F_2018],
+            L_shoot_F_2019=[L_shoot_F_2019],
+            S_shoot_V_2018=[S_shoot_V_2018],
+            S_shoot_V_2019=[S_shoot_V_2019],
+            S_shoot_F_2018=[S_shoot_F_2018],
+            S_shoot_F_2019=[S_shoot_F_2019],
+            nb_V_2018=[nb_V_2018],
+            nb_V_2019=[nb_V_2019],
             nb_F_2018=[nb_F_2018],
             nb_F_2019=[nb_F_2019],
+            nb_L_2018=[nb_L_2018],
+            nb_L_2019=[nb_L_2019],
             LA_2018=[LA_2018],
             LA_2019=[LA_2019],
+            Elongation=[Elongation],
+            Tapper=[Tapper],
+            nb_Trunk_S=[nb_Trunk_S],
             ),
-            columns=columns)
+            columns='apple_tree trt NCI TSA_2018 TSA_2019 L_shoot_V_2018 L_shoot_V_2019 '
+            'L_shoot_F_2018 L_shoot_F_2019 S_shoot_V_2018 S_shoot_V_2019 S_shoot_F_2018 S_shoot_F_2019 '
+            'nb_V_2018 nb_V_2019 nb_F_2018 nb_F_2019 nb_L_2018 nb_L_2019 LA_2018 LA_2019 '
+            'Elongation Tapper nb_Trunk_S'.split(' '))
         return df
 
 
@@ -831,7 +941,7 @@ class Branches2(Tree2):
         vs18 = [v for v, d in dates.items() if d !='2019']
         vs19 = [v for v, d in dates.items()
                     if (d =='2019') or
-                       (d =='2018' and isinstance(lines.get(v), list))
+                       (isinstance(lines.get(v), list))
                ]
         setv18 = set(vs18) 
         setv19 = set(vs19)
@@ -839,6 +949,14 @@ class Branches2(Tree2):
         # Extract branches first vertex of each branch beared by the trunk
         trunk = g.Trunk(2)
         brs = [b for v in trunk for b in g.Sons(v, EdgeType='+')]
+
+        labels18 = {}
+        for label in list('ABCDE'):
+            labels18[label] = [v for v in vs18 if g.class_name(v) ==label]
+
+        labels19 = {}
+        for label in list('ABCDE'):
+            labels19[label] = [v for v in vs19 if g.class_name(v) ==label]
 
         #vtrunk = g.Trunk(3)
         #vbrs = [b for v in vtrunk for b in g.Sons(v, EdgeType='+')]
