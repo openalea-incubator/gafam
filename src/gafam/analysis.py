@@ -784,6 +784,9 @@ class Tree2(Tree):
         
         self.upscale('length', operator=sum)
         self.upscale('leaf_area_2019', operator=sum)
+        self.upscale('nb_leaves', operator=sum)
+        self.upscale('nb_flowers', operator=sum)
+        self.upscale('nb_fruits', operator=sum)
 
         apple_tree = g.index(1)
         trt = 'ac'

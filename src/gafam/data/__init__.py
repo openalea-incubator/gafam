@@ -11,3 +11,7 @@ def files():
 def file(fn):
     fns = data_dir.glob('%s.txt'%fn)
     return fns[0]
+
+def treatment():
+    fns = data_dir.glob('treatment.csv')
+    return fns[0]
